@@ -10,7 +10,7 @@ export const getStravaActivityData = async (token: string) => {
         },
         params: {
           page: 1,
-          per_page: 3,
+          per_page: 7,
         },
       }
     );

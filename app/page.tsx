@@ -33,6 +33,9 @@ export default function Home() {
           "
         >
           Should I run?
+          <p className="text-gray-300 text-sm font-normal">
+            Requires Strava sign in and location data
+          </p>
         </button>
 
         <button

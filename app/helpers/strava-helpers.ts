@@ -9,7 +9,7 @@ export const isStravaTokenExpired = (currentExpirationTime?: number) => {
   return currentEpochTime > Number(currentExpirationTime);
 };
 
-export const fetchLastThreeStravaActivities = async (accessToken?: JWT) => {
+export const fetchLastSevenStravaActivities = async (accessToken?: JWT) => {
   try {
     if (!accessToken) {
       return;
