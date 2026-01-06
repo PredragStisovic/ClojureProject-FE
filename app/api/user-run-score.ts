@@ -25,6 +25,31 @@ export const shouldUserRun = async (
   }
 };
 
+export const whereShouldUserRun = async (
+  latitude: number,
+  longitude: number,
+  distance: number
+) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:8080/should-i-run-api/return-routes",
+      {
+        latitude,
+        longitude,
+        distance,
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "Error fetching activities:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
 export const fetchStrava = async () => {
   const res = await axios.get("/api/strava");
   return res;
