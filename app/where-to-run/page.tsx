@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { whereShouldUserRun } from "../api/user-run-score";
+import { exportRoutesToGPX, whereShouldUserRun } from "../api/user-run-score";
 import { getCurrentLocation } from "../helpers/location-helpers";
 import dynamic from "next/dynamic";
 import { CustomRoute } from "../types/CustomRoute";
+import { useRouter } from "next/navigation";
 
 export default function WhereToRun() {
   const [distance, setDistance] = useState<number>(5);
@@ -12,6 +13,7 @@ export default function WhereToRun() {
   const [routes, setRoutes] = useState<CustomRoute[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const LeafletMap = dynamic(() => import("../components/LeafletMapInner"), {
     ssr: false,
@@ -33,7 +35,6 @@ export default function WhereToRun() {
           setError("No routes found.");
           return;
         }
-
         setRoutes(res.routes);
       } catch (err) {
         console.error(err);
@@ -60,6 +61,18 @@ export default function WhereToRun() {
 
     return points.length > 0 ? points : null;
   }, [routes]);
+
+  const exportToGPX = async () => {
+    if (!routes || routes === null) {
+      return;
+    }
+    try {
+      const res = await exportRoutesToGPX(routes);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to return GPX file.");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-neutral-900 to-black px-6">
@@ -118,9 +131,25 @@ export default function WhereToRun() {
         )}
 
         {!isLoading && routes && (
-          <div className="h-[500px] rounded-xl overflow-hidden">
-            <LeafletMap routes={routes} />
-          </div>
+          <>
+            <div className="h-[500px] rounded-xl overflow-hidden">
+              <LeafletMap routes={routes} />
+            </div>
+            <div className="flex justify-between">
+              <button
+                onClick={() => router.push("/")}
+                className="w-[200] mt-5 bg-gray-600 hover:bg-blue-700 transition-colors text-white font-medium py-2.5 rounded-lg"
+              >
+                Return to main menu
+              </button>
+              <button
+                onClick={() => exportToGPX()}
+                className="w-[200] mt-5 bg-blue-600 hover:bg-blue-700 transition-colors text-white font-medium py-2.5 rounded-lg"
+              >
+                Export routes to GPX
+              </button>
+            </div>
+          </>
         )}
       </div>
     </div>
